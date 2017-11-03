@@ -22,7 +22,7 @@ services:
             - redis
 
     api:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        image: up2university/learninglocker2-app:${DOCKER_TAG}
         environment:
             - DOMAIN_NAME
             - APP_SECRET
@@ -33,7 +33,7 @@ services:
             - redis
 
     ui:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        image: up2university/learninglocker2-app:${DOCKER_TAG}
         environment:
             - DOMAIN_NAME
             - APP_SECRET
@@ -45,7 +45,7 @@ services:
             - api
 
     worker:
-        image: michzimny/learninglocker2-app:${DOCKER_TAG}
+        image: up2university/learninglocker2-app:${DOCKER_TAG}
         environment:
             - DOMAIN_NAME
             - APP_SECRET
@@ -56,7 +56,7 @@ services:
             - redis
 
     nginx:
-        image: michzimny/learninglocker2-nginx:${DOCKER_TAG}
+        image: up2university/learninglocker2-nginx:${DOCKER_TAG}
         environment:
             - DOMAIN_NAME
         restart: unless-stopped
