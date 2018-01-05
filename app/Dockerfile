@@ -20,11 +20,11 @@ RUN apt-get update \
 RUN npm install -g yarn 
 
 # install LL app
-ENV LL_TAG=v2.0.5
+ENV LL_TAG=v2.1.1
 RUN git clone https://github.com/LearningLocker/learninglocker.git /opt/learninglocker \
     && cd /opt/learninglocker \
     && git checkout $LL_TAG \
-    && yarn install \
+    && yarn install --production \
     && yarn build-all
 
 WORKDIR /opt/learninglocker
@@ -32,6 +32,9 @@ WORKDIR /opt/learninglocker
 # make a copy of the origin storage directory that will be used in entrypoint-common.sh
 # to fill up a volume mounted here, if it's empty
 RUN cp -r storage storage.template
+RUN npm install pm2 -g
+RUN pm2-runtime install pm2-logrotate
+RUN pm2-runtime set pm2-logrotate:compress true
 
 # service api exposes port 8080
 # service ui exposes port 3000
@@ -41,6 +44,7 @@ EXPOSE 3000 8080
 COPY env.template .env.template
 COPY entrypoint-common.sh entrypoint-common.sh
 COPY entrypoint-ui.sh entrypoint-ui.sh
+RUN chmod +x ./entrypoint-ui.sh && chmod +x ./entrypoint-common.sh
 
 ENTRYPOINT ["./entrypoint-common.sh"]
-
+CMD ["pm2-runtime", "pm2/all.json"]

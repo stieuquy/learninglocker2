@@ -3,88 +3,44 @@ services:
 
     mongo:
         image: mongo:3.4
-        restart: unless-stopped
+        restart: always
         volumes:
-            - "${DATA_LOCATION}/mongo:/data/db"
+            - "learninglocker_data:/data/db"
 
     redis:
         image: redis:4-alpine
-        restart: unless-stopped
+        restart: always
 
     xapi:
-        image: learninglocker/xapi-service:v1.1.0
-        restart: unless-stopped
+        image: learninglocker/xapi-service:2.0.1
+        restart: always
         environment:
             - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
             - REDIS_URL=redis://redis:6379/0
+            - REDIS_PREFIX=xapi_learninglocker
         depends_on:
             - mongo
             - redis
 
-    api:
-        image: up2university/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "node api/dist/server"
-        restart: unless-stopped
+    learninglocker:
+        image: hoangvubrvt/learninglocker:2.1.1
+        restart: always
         depends_on:
             - mongo
             - redis
         volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
-
-    ui:
-        image: up2university/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "./entrypoint-ui.sh"
-        restart: unless-stopped
-        depends_on:
-            - mongo
-            - redis
-            - api
-        volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
-
-    worker:
-        image: up2university/learninglocker2-app:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-            - APP_SECRET
-            - SMTP_HOST
-            - SMTP_PORT
-            - SMTP_SECURED
-            - SMTP_USER
-            - SMTP_PASS
-        command: "node worker/dist/server"
-        restart: unless-stopped
-        depends_on:
-            - mongo
-            - redis
-        volumes:
-            - "${DATA_LOCATION}/app-storage:/opt/learninglocker/storage"
-
+            - "learninglocker_storage:/opt/learninglocker/storage"
+        
     nginx:
-        image: up2university/learninglocker2-nginx:${DOCKER_TAG}
-        environment:
-            - DOMAIN_NAME
-        restart: unless-stopped
+        build: nginx
+        restart: always
         depends_on:
-            - ui
+            - learninglocker
             - xapi
         ports:
-            - "443:443"
             - "80:80"
 
+
+volumes: 
+    learninglocker_data: {}
+    learninglocker_storage: {}
