@@ -30,9 +30,13 @@ services:
             - redis
         volumes:
             - "learninglocker_storage:/opt/learninglocker/storage"
+        env_file: 
+            - ./.env
         
     nginx:
         build: nginx
+        env_file: 
+            - ./.env
         restart: always
         depends_on:
             - learninglocker
