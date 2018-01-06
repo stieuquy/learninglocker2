@@ -4,12 +4,16 @@ services:
     mongo:
         image: mongo:3.4
         restart: always
+        networks: 
+            - learninglocker-network
         volumes:
             - "learninglocker_data:/data/db"
 
     redis:
         image: redis:4-alpine
         restart: always
+        networks: 
+            - learninglocker-network
 
     xapi:
         image: learninglocker/xapi-service:2.0.1
@@ -18,18 +22,22 @@ services:
             - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
             - REDIS_URL=redis://redis:6379/0
             - REDIS_PREFIX=xapi_learninglocker
+        networks: 
+            - learninglocker-network
         depends_on:
             - mongo
             - redis
 
     learninglocker:
-        image: hoangvubrvt/learninglocker:2.1.1
+        build: app
         restart: always
         depends_on:
             - mongo
             - redis
         volumes:
             - "learninglocker_storage:/opt/learninglocker/storage"
+        networks: 
+            - learninglocker-network
         env_file: 
             - ./.env
         
@@ -38,13 +46,23 @@ services:
         env_file: 
             - ./.env
         restart: always
+        links:
+            - "learninglocker:learninglocker"
+            - "xapi:xapi"
         depends_on:
             - learninglocker
             - xapi
+        networks: 
+            - learninglocker-network
         ports:
-            - "80:80"
+            - "1300:80"
 
 
 volumes: 
     learninglocker_data: {}
     learninglocker_storage: {}
+networks:
+    learninglocker-network:
+        driver: bridge
+    nginx-proxy:
+        external: true
