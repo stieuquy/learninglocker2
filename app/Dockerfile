@@ -24,7 +24,8 @@ ENV LL_TAG=master
 RUN git clone https://github.com/LearningLocker/learninglocker.git /opt/learninglocker \
     && cd /opt/learninglocker \
     && git checkout $LL_TAG \
-    && yarn install --production \
+    && mv .env.example .env \
+    && yarn install \
     && yarn build-all
 
 WORKDIR /opt/learninglocker
@@ -33,8 +34,6 @@ WORKDIR /opt/learninglocker
 # to fill up a volume mounted here, if it's empty
 RUN cp -r storage storage.template
 RUN npm install pm2 -g
-RUN pm2-runtime install pm2-logrotate
-RUN pm2-runtime set pm2-logrotate:compress true
 
 # service api exposes port 8080
 # service ui exposes port 3000
