@@ -16,7 +16,7 @@ services:
             - learninglocker-network
 
     xapi:
-        image: learninglocker/xapi-service:2.0.1
+        image: learninglocker/xapi-service:latest
         restart: always
         environment:
             - MONGO_URL=mongodb://mongo:27017/learninglocker_v2
