@@ -36,6 +36,7 @@ services:
             - redis
         volumes:
             - "learninglocker_storage:/opt/learninglocker/storage"
+            - "learninglocker_node_modules_cache :/opt/learninglocker/node_modules"
         networks: 
             - learninglocker-network
         env_file: 
@@ -61,6 +62,7 @@ services:
 volumes: 
     learninglocker_data: {}
     learninglocker_storage: {}
+    learninglocker_node_modules_cache: {}
 networks:
     learninglocker-network:
         driver: bridge
