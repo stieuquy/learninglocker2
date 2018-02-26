@@ -50,7 +50,7 @@ Open the site and accept non-trusted SSL/TLS certs (see below for trusted certs)
 To create a new user and organisation for the site:
 
 ```
-docker-compose exec api node cli/dist/server createSiteAdmin [email] [organisation] [password]
+docker-compose exec learninglocker node cli/dist/server createSiteAdmin [email] [organisation] [password]
 ```
 
 ## Production usage
